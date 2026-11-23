@@ -1,0 +1,5 @@
+.venv/
+.esphome/
+esphome-matter/
+secrets.yaml
+build.log

@@ -1,0 +1,268 @@
+substitutions:
+  device_name: levoit-core300s
+  rx_pin: GPIO16
+  tx_pin: GPIO17
+
+esphome:
+  name: ${device_name}
+  friendly_name: Levoit Core 300S
+  on_boot:
+    priority: -100
+    then:
+      - delay: 15s
+      - lambda: id(accept_matter_writes) = true;
+
+esp32:
+  board: esp32dev
+  flash_size: 4MB
+  partitions: partitions-4mb-matter.csv
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_FREERTOS_UNICORE: y
+      CONFIG_BTDM_CTRL_BLE_MAX_CONN: "1"
+      CONFIG_BT_NIMBLE_SECURITY_ENABLE: n
+      CONFIG_ESP_MATTER_MAX_DYNAMIC_ENDPOINT_COUNT: "8"
+
+external_components:
+  - source:
+      type: local
+      path: esphome-matter/components
+  - source:
+      type: git
+      url: https://github.com/tuct/levoit
+      ref: main
+    components: [levoit]
+
+logger:
+  level: INFO
+
+network:
+  enable_ipv6: true
+
+wifi:
+  reboot_timeout: 0s
+  power_save_mode: none
+  output_power: 15dB
+
+improv_serial:
+
+mdns:
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+uart:
+  - id: uart_mcu
+    tx_pin: ${tx_pin}
+    rx_pin: ${rx_pin}
+    baud_rate: 115200
+
+levoit:
+  id: purifier
+  model: CORE300S
+
+fan:
+  - platform: levoit
+    levoit: purifier
+    name: "Fan"
+    id: purifier_fan
+
+sensor:
+  - platform: levoit
+    levoit: purifier
+    name: "PM2.5"
+    id: pm25
+    type: pm25
+  - platform: levoit
+    levoit: purifier
+    name: "AQI"
+    id: aqi
+    type: aqi
+  - platform: levoit
+    levoit: purifier
+    name: "Filter Life"
+    id: filter_life
+    type: filter_life_left
+
+binary_sensor:
+  - platform: levoit
+    levoit: purifier
+    name: "Filter Low"
+    id: filter_low
+    type: filter_low
+
+switch:
+  - platform: levoit
+    levoit: purifier
+    name: "Display"
+    id: display_switch
+    type: display
+    on_turn_on:
+      - if:
+          condition:
+            lambda: return !id(toggle_from_matter);
+          then:
+            - script.execute: count_display_toggle
+      - matter.set_attribute:
+          path: display_endpoint.on_off.on_off
+          value: true
+    on_turn_off:
+      - if:
+          condition:
+            lambda: return !id(toggle_from_matter);
+          then:
+            - script.execute: count_display_toggle
+      - matter.set_attribute:
+          path: display_endpoint.on_off.on_off
+          value: false
+  - platform: levoit
+    levoit: purifier
+    name: "Child Lock"
+    id: child_lock_switch
+    type: child_lock
+    on_turn_on:
+      - matter.set_attribute:
+          path: child_lock_endpoint.on_off.on_off
+          value: true
+    on_turn_off:
+      - matter.set_attribute:
+          path: child_lock_endpoint.on_off.on_off
+          value: false
+  - platform: template
+    name: "Sleep"
+    id: sleep_switch
+    lambda: |-
+      return id(purifier_fan).state && id(purifier_fan).get_preset_mode() == "Sleep";
+    turn_on_action:
+      - lambda: |-
+          auto call = id(purifier_fan).turn_on();
+          call.set_preset_mode("Sleep");
+          call.perform();
+    turn_off_action:
+      - lambda: |-
+          if (id(purifier_fan).state && id(purifier_fan).get_preset_mode() == "Sleep") {
+            auto call = id(purifier_fan).make_call();
+            call.set_preset_mode("Manual");
+            call.perform();
+          }
+    on_turn_on:
+      - matter.set_attribute:
+          path: sleep_endpoint.on_off.on_off
+          value: true
+    on_turn_off:
+      - matter.set_attribute:
+          path: sleep_endpoint.on_off.on_off
+          value: false
+
+interval:
+  - interval: 60s
+    then:
+      - lambda: |-
+          ESP_LOGI("heap", "free=%u min_free=%u largest_block=%u",
+                   (unsigned) esp_get_free_heap_size(),
+                   (unsigned) esp_get_minimum_free_heap_size(),
+                   (unsigned) heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+
+globals:
+  - id: accept_matter_writes
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: toggle_from_matter
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: display_toggle_count
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+script:
+  - id: count_display_toggle
+    mode: restart
+    then:
+      - lambda: id(display_toggle_count) += 1;
+      - if:
+          condition:
+            lambda: return id(display_toggle_count) >= 6;
+          then:
+            - logger.log: "Display toggled 6 times, resetting Matter and WiFi"
+            - matter.factory_reset:
+      - delay: 6s
+      - lambda: id(display_toggle_count) = 0;
+
+matter:
+  vendor_name: Levoit
+  product_name: Core 300S
+  ble_commissioning: true
+  endpoints:
+    1:
+      air_purifier:
+        fan_id: purifier_fan
+        with_features:
+          - multi_speed
+          - auto
+        hepa_filter_condition: filter_life
+        hepa_filter_change_indication: filter_low
+      clusters:
+        on_off:
+    2:
+      air_quality_sensor:
+        pm_2_5: pm25
+        air_quality: aqi
+    3:
+      id: sleep_endpoint
+      on_off_plug_in_unit:
+      on_attribute:
+        on_off.on_off:
+          - if:
+              condition:
+                lambda: return id(accept_matter_writes);
+              then:
+                - lambda: id(toggle_from_matter) = true;
+                - if:
+                    condition:
+                      lambda: return value;
+                    then:
+                      - switch.turn_on: sleep_switch
+                    else:
+                      - switch.turn_off: sleep_switch
+                - lambda: id(toggle_from_matter) = false;
+    4:
+      id: display_endpoint
+      on_off_plug_in_unit:
+      on_attribute:
+        on_off.on_off:
+          - if:
+              condition:
+                lambda: return id(accept_matter_writes);
+              then:
+                - lambda: id(toggle_from_matter) = true;
+                - if:
+                    condition:
+                      lambda: return value;
+                    then:
+                      - switch.turn_on: display_switch
+                    else:
+                      - switch.turn_off: display_switch
+                - lambda: id(toggle_from_matter) = false;
+    5:
+      id: child_lock_endpoint
+      on_off_plug_in_unit:
+      on_attribute:
+        on_off.on_off:
+          - if:
+              condition:
+                lambda: return id(accept_matter_writes);
+              then:
+                - lambda: id(toggle_from_matter) = true;
+                - if:
+                    condition:
+                      lambda: return value;
+                    then:
+                      - switch.turn_on: child_lock_switch
+                    else:
+                      - switch.turn_off: child_lock_switch
+                - lambda: id(toggle_from_matter) = false;
