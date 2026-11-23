@@ -58,3 +58,7 @@ That is the short version. **Read [`FLASHING.md`](FLASHING.md) before you open t
 | `partitions-4mb-matter.csv` | Partition table. Two 1.94 MB app slots. |
 | `FLASHING.md` | Build, flash, pair, update, reset. |
 | `docs/UPSTREAM.md` | What the esphome-matter branch changes and the plan for sending it upstream. |
+
+## Licence
+
+MIT. See [`LICENSE`](LICENSE).
