@@ -1,17 +1,28 @@
 # esphome-levoit-matter
 
-ESPHome config that puts a Levoit Core 300S on Matter. No cloud, no VeSync, no Home Assistant required. Pairs with Apple Home by QR code over Bluetooth.
+Levoit air purifiers on Matter, using ESPHome. No cloud, no VeSync, no Home Assistant required. Pairs with Apple Home by QR code over Bluetooth.
 
 **Status: compiles. Has never run on hardware. Best effort, no support.**
 
-If you want a firmware and not an ESPHome config, use [levoit-matter](https://github.com/tadhglewis/levoit-matter). It is the same purifier on Espressif's Matter SDK directly, it covers more models, and it is where the work goes.
+## What is going on here
 
-## What this is
+ESPHome has no Matter support of its own. [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) adds it, but it is early and is missing what an air purifier needs:
 
-One YAML file and a partition table. The rest is other people's code:
+| Missing upstream | Why a purifier needs it |
+|---|---|
+| Bluetooth pairing on Wi-Fi devices | Without it there is no "scan the QR code and it joins your Wi-Fi". |
+| A way to map an ESPHome fan to a Matter fan | Speeds and Auto mode. |
+| Filter life and air quality sensors | The filter status and the air quality tile. |
+| Setting values on fan, filter and air quality from YAML | Keeping Matter in step with the purifier's own buttons. |
 
-- [tuct/levoit](https://github.com/tuct/levoit) drives the purifier.
-- [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) provides Matter, through the `ble-commissioning-fan-mapping` branch of [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter). See [`docs/UPSTREAM.md`](docs/UPSTREAM.md) for what the branch adds.
+So this project is two things:
+
+1. **A fork of esphome-matter that adds those features**: the `ble-commissioning-fan-mapping` branch of [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter). Nothing in it is Levoit-specific, and the aim is to get all of it merged upstream. [`docs/UPSTREAM.md`](docs/UPSTREAM.md) lists each change and the plan.
+2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit).
+
+Until the fork's changes are merged, you build against the fork. After that, this config should work with upstream esphome-matter and the fork goes away.
+
+If you want a finished firmware and not an ESPHome config, use [levoit-matter](https://github.com/tadhglewis/levoit-matter). It is the same purifier on Espressif's Matter SDK directly, with no fork involved, and it covers more models.
 
 ## Features
 
@@ -57,7 +68,7 @@ That is the short version. **Read [`FLASHING.md`](FLASHING.md) before you open t
 | `levoit-core300s.yaml` | Device config. All purifier-specific logic lives here. |
 | `partitions-4mb-matter.csv` | Partition table. Two 1.94 MB app slots. |
 | `FLASHING.md` | Build, flash, pair, update, reset. |
-| `docs/UPSTREAM.md` | What the esphome-matter branch changes and the plan for sending it upstream. |
+| `docs/UPSTREAM.md` | What the fork adds to esphome-matter and the plan for sending it upstream. |
 
 ## Licence
 
