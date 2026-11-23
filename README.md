@@ -61,15 +61,6 @@ The log prints a QR code link. Scan it in Apple Home.
 
 That is the short version. **Read [`FLASHING.md`](FLASHING.md) before you open the purifier.** It covers wiring, backing up the stock firmware, pairing, updates and resets.
 
-## Layout
-
-| Path | What |
-|---|---|
-| `levoit-core300s.yaml` | Device config. All purifier-specific logic lives here. |
-| `partitions-4mb-matter.csv` | Partition table. Two 1.94 MB app slots. |
-| `FLASHING.md` | Build, flash, pair, update, reset. |
-| `docs/UPSTREAM.md` | What the fork adds to esphome-matter and the plan for sending it upstream. |
-
 ## Licence
 
 MIT. See [`LICENSE`](LICENSE).
