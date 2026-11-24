@@ -1,10 +1,10 @@
 # esphome-levoit-matter
 
+Don't need ESPHome? Use [levoit-matter](https://github.com/tadhglewis/levoit-matter).
+
 Levoit air purifiers on Matter, using ESPHome. No cloud, no VeSync, no Home Assistant required. Pairs with Apple Home by QR code over Bluetooth.
 
 **Status: compiles. Has never run on hardware. Best effort, no support.**
-
-**If you do not need ESPHome, use [levoit-matter](https://github.com/tadhglewis/levoit-matter).** It is the same purifier on Espressif's Matter SDK, esp-matter, directly. It runs on a real Core 300S, needs no fork, and covers more models. Use this repo only if you want the purifier inside an ESPHome setup.
 
 ## What is going on here
 
