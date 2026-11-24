@@ -31,12 +31,12 @@ Until the fork's changes are merged, you build against the fork. After that, thi
 |---|---|
 | Power, 3 speeds | Purifier tile, percentage slider |
 | Auto mode | Purifier mode, showing the speed the fan runs at |
-| Filter life, change-filter flag | Filter status. Six months at full speed, counted by airflow. Hold Sleep for 3 seconds to reset. |
+| Filter life, change-filter flag | Filter status. Six months at full speed, counted by airflow. Hold Sleep for 3 seconds to reset ([manual](https://files.vesync.com/desc/LEVOIT_Core300S_USER_MANUAL.pdf), page 5). |
 | PM2.5, air quality level | Air quality sensor |
 | Sleep, Display, Child Lock | Three separate switches. Display reads off in Sleep and refuses to turn on. |
 | Pairing | Scan the QR code. The phone sends Wi-Fi over Bluetooth. |
 | Updates over Wi-Fi | ESPHome OTA from your machine |
-| Factory reset | Hold the Wi-Fi button for 15 seconds. Keeps the setup code. |
+| Factory reset | Hold On/Off for 15 seconds, as the [manual](https://files.vesync.com/desc/LEVOIT_Core300S_USER_MANUAL.pdf) says (page 7). Keeps the setup code. |
 
 ## Known problems
 

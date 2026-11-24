@@ -107,8 +107,8 @@ number:
 binary_sensor:
   - platform: levoit
     levoit: purifier
-    name: "Wi-Fi Button Held"
-    type: wifi_button_held
+    name: "On/Off Button Held"
+    type: power_button_held
     internal: true
     on_press:
       - script.execute: reset_hold
@@ -214,7 +214,7 @@ script:
     mode: restart
     then:
       - delay: 11s
-      - logger.log: "Wi-Fi button held, resetting Matter and Wi-Fi"
+      - logger.log: "On/Off held for 15 s, resetting Matter and Wi-Fi"
       - matter.factory_reset:
 
 matter:
