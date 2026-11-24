@@ -1,6 +1,7 @@
 # esphome-levoit-matter
 
-Don't need ESPHome? Use [levoit-matter](https://github.com/tadhglewis/levoit-matter).
+> [!TIP]
+> Don't need ESPHome? Use [levoit-matter](https://github.com/tadhglewis/levoit-matter).
 
 Levoit air purifiers on Matter, using ESPHome. No cloud, no VeSync, no Home Assistant required. Pairs with Apple Home by QR code over Bluetooth.
 
