@@ -109,7 +109,7 @@ Use the IP address if `.local` does not resolve.
 
 ## 7. Factory reset
 
-Tap Display Off six times within six seconds. This clears Matter pairing and the saved Wi-Fi network, then reboots into pairing mode. If that fails, erase over serial and flash again:
+Hold the Wi-Fi button for 15 seconds. This clears Matter pairing and the saved Wi-Fi network, then reboots into pairing mode. The setup code stays the same. If that fails, erase over serial and flash again:
 
 ```bash
 .venv/bin/esptool --port $PORT erase-flash

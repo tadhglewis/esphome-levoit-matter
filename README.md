@@ -5,7 +5,7 @@
 
 Levoit air purifiers on Matter, using ESPHome. No cloud, no VeSync, no Home Assistant required. Pairs with Apple Home by QR code over Bluetooth.
 
-**Status: compiles. Has never run on hardware. Best effort, no support.**
+**Status: runs on one Core 300S, paired to Apple Home. Best effort, no support.**
 
 ## What is going on here
 
@@ -21,7 +21,7 @@ ESPHome has no Matter support of its own. [DavidvtWout/esphome-matter](https://g
 So this project is two things:
 
 1. **A fork of esphome-matter that adds those features**: the `ble-commissioning-fan-mapping` branch of [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter). Nothing in it is Levoit-specific, and the aim is to get all of it merged upstream. [`docs/UPSTREAM.md`](docs/UPSTREAM.md) lists each change and the plan.
-2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit).
+2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit), through the `feat/core-wifi-button-hold` branch of [tadhglewis/levoit](https://github.com/tadhglewis/levoit) until [#140](https://github.com/tuct/levoit/pull/140), [#141](https://github.com/tuct/levoit/pull/141) and the Wi-Fi button change are merged. Without them a Core 300S whose controller reports 1.0.0 shows no state at all.
 
 Until the fork's changes are merged, you build against the fork. After that, this config should work with upstream esphome-matter and the fork goes away.
 
@@ -30,22 +30,23 @@ Until the fork's changes are merged, you build against the fork. After that, thi
 | Feature | In Apple Home |
 |---|---|
 | Power, 3 speeds | Purifier tile, percentage slider |
-| Auto mode | Purifier mode. Unverified in Home. |
-| Filter life, change-filter flag | Filter status. Unverified in Home. |
+| Auto mode | Purifier mode, showing the speed the fan runs at |
+| Filter life, change-filter flag | Filter status |
 | PM2.5, air quality level | Air quality sensor |
-| Sleep, Display, Child Lock | Three separate switches |
+| Sleep, Display, Child Lock | Three separate switches. Display reads off in Sleep and refuses to turn on. |
 | Pairing | Scan the QR code. The phone sends Wi-Fi over Bluetooth. |
 | Updates over Wi-Fi | ESPHome OTA from your machine |
-| Factory reset | Tap Display Off six times within six seconds |
+| Factory reset | Hold the Wi-Fi button for 15 seconds. Keeps the setup code. |
 
 ## Known problems
 
-- Sleep shows as the last manual speed. Picking that same speed does not leave Sleep.
-- The Wi-Fi LED does nothing.
-- Commands are not retried, and state is not requested when the purifier goes quiet.
+- Sleep shows as the last manual speed.
+- The Wi-Fi LED does nothing, and nothing shows that a reset hold has registered.
+- Commands are not retried.
 - A bad update is not rolled back on a health check.
+- The setup code is random, made on first boot, and only printed in the log. Copy it from there.
 - Test vendor ID. Apple shows an "uncertified accessory" prompt once.
-- Free memory during Bluetooth pairing on the stock chip is unmeasured.
+- The 15-second reset is wired up but has not been held to the end on hardware.
 
 ## Quick start
 

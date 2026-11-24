@@ -23,6 +23,8 @@ esp32:
       CONFIG_BTDM_CTRL_BLE_MAX_CONN: "1"
       CONFIG_BT_NIMBLE_SECURITY_ENABLE: n
       CONFIG_ESP_MATTER_MAX_DYNAMIC_ENDPOINT_COUNT: "8"
+      CONFIG_DEVICE_SOFTWARE_VERSION_NUMBER: "1"
+      CONFIG_DEVICE_SOFTWARE_VERSION: "1"
 
 external_components:
   - source:
@@ -30,8 +32,8 @@ external_components:
       path: esphome-matter/components
   - source:
       type: git
-      url: https://github.com/tuct/levoit
-      ref: main
+      url: https://github.com/tadhglewis/levoit
+      ref: feat/core-wifi-button-hold
     components: [levoit]
 
 logger:
@@ -46,6 +48,9 @@ wifi:
   output_power: 15dB
 
 improv_serial:
+
+api:
+  reboot_timeout: 0s
 
 mdns:
 
@@ -89,6 +94,15 @@ sensor:
 binary_sensor:
   - platform: levoit
     levoit: purifier
+    name: "Wi-Fi Button Held"
+    type: wifi_button_held
+    internal: true
+    on_press:
+      - script.execute: reset_hold
+    on_release:
+      - script.stop: reset_hold
+  - platform: levoit
+    levoit: purifier
     name: "Filter Low"
     id: filter_low
     type: filter_low
@@ -102,18 +116,12 @@ switch:
     on_turn_on:
       - if:
           condition:
-            lambda: return !id(toggle_from_matter);
+            lambda: return !id(sleep_switch).state;
           then:
-            - script.execute: count_display_toggle
-      - matter.set_attribute:
-          path: display_endpoint.on_off.on_off
-          value: true
+            - matter.set_attribute:
+                path: display_endpoint.on_off.on_off
+                value: true
     on_turn_off:
-      - if:
-          condition:
-            lambda: return !id(toggle_from_matter);
-          then:
-            - script.execute: count_display_toggle
       - matter.set_attribute:
           path: display_endpoint.on_off.on_off
           value: false
@@ -151,10 +159,20 @@ switch:
       - matter.set_attribute:
           path: sleep_endpoint.on_off.on_off
           value: true
+      - matter.set_attribute:
+          path: display_endpoint.on_off.on_off
+          value: false
     on_turn_off:
       - matter.set_attribute:
           path: sleep_endpoint.on_off.on_off
           value: false
+      - if:
+          condition:
+            switch.is_on: display_switch
+          then:
+            - matter.set_attribute:
+                path: display_endpoint.on_off.on_off
+                value: true
 
 interval:
   - interval: 60s
@@ -170,28 +188,21 @@ globals:
     type: bool
     restore_value: false
     initial_value: "false"
-  - id: toggle_from_matter
-    type: bool
-    restore_value: false
-    initial_value: "false"
-  - id: display_toggle_count
-    type: int
-    restore_value: false
-    initial_value: "0"
 
 script:
-  - id: count_display_toggle
+  - id: display_unavailable
     mode: restart
     then:
-      - lambda: id(display_toggle_count) += 1;
-      - if:
-          condition:
-            lambda: return id(display_toggle_count) >= 6;
-          then:
-            - logger.log: "Display toggled 6 times, resetting Matter and WiFi"
-            - matter.factory_reset:
-      - delay: 6s
-      - lambda: id(display_toggle_count) = 0;
+      - delay: 1s
+      - matter.set_attribute:
+          path: display_endpoint.on_off.on_off
+          value: false
+  - id: reset_hold
+    mode: restart
+    then:
+      - delay: 11s
+      - logger.log: "Wi-Fi button held, resetting Matter and Wi-Fi"
+      - matter.factory_reset:
 
 matter:
   vendor_name: Levoit
@@ -221,7 +232,6 @@ matter:
               condition:
                 lambda: return id(accept_matter_writes);
               then:
-                - lambda: id(toggle_from_matter) = true;
                 - if:
                     condition:
                       lambda: return value;
@@ -229,7 +239,6 @@ matter:
                       - switch.turn_on: sleep_switch
                     else:
                       - switch.turn_off: sleep_switch
-                - lambda: id(toggle_from_matter) = false;
     4:
       id: display_endpoint
       on_off_plug_in_unit:
@@ -239,15 +248,23 @@ matter:
               condition:
                 lambda: return id(accept_matter_writes);
               then:
-                - lambda: id(toggle_from_matter) = true;
                 - if:
                     condition:
-                      lambda: return value;
+                      lambda: return id(sleep_switch).state;
                     then:
-                      - switch.turn_on: display_switch
+                      - if:
+                          condition:
+                            lambda: return value;
+                          then:
+                            - script.execute: display_unavailable
                     else:
-                      - switch.turn_off: display_switch
-                - lambda: id(toggle_from_matter) = false;
+                      - if:
+                          condition:
+                            lambda: return value;
+                          then:
+                            - switch.turn_on: display_switch
+                          else:
+                            - switch.turn_off: display_switch
     5:
       id: child_lock_endpoint
       on_off_plug_in_unit:
@@ -257,7 +274,6 @@ matter:
               condition:
                 lambda: return id(accept_matter_writes);
               then:
-                - lambda: id(toggle_from_matter) = true;
                 - if:
                     condition:
                       lambda: return value;
@@ -265,4 +281,3 @@ matter:
                       - switch.turn_on: child_lock_switch
                     else:
                       - switch.turn_off: child_lock_switch
-                - lambda: id(toggle_from_matter) = false;
