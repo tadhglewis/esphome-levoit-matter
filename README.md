@@ -48,6 +48,22 @@ Until the fork's changes are merged, you build against the fork. After that, thi
 - Test vendor ID. Apple shows an "uncertified accessory" prompt once.
 - The 15-second reset is wired up but has not been held to the end on hardware.
 
+## Resources
+
+Measured on a Core 300S on 2026-11-25, ESPHome 2026.11.0.
+
+| | Value |
+|---|---|
+| Firmware image | 1.48 MB of a 1.94 MB app slot, 73% |
+| Static RAM | 104 KB of 124 KB, 84% |
+| Free heap, running and paired | About 118 KB |
+| Largest free block | About 40 KB |
+| Lowest free heap since boot | About 41 KB, on a boot without Bluetooth pairing |
+| Update over Wi-Fi | About 8 s to send the image, compressed to 0.99 MB |
+| Build after a config change | About a minute |
+
+The native firmware, [levoit-matter](https://github.com/tadhglewis/levoit-matter/blob/main/docs/DESIGN.md#resources), is the same size and uses the same static RAM. Its lowest free heap was measured across a Bluetooth pairing and this one's was not, so the two are not comparable.
+
 ## Quick start
 
 You need the case open and a 3.3 V USB serial adapter.
