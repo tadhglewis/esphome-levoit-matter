@@ -217,6 +217,13 @@ script:
       - logger.log: "On/Off held for 15 s, resetting Matter and Wi-Fi"
       - matter.factory_reset:
 
+text_sensor:
+  - platform: matter
+    qr_code:
+      name: "Matter QR Code"
+    manual_pairing_code:
+      name: "Matter Pairing Code"
+
 matter:
   vendor_name: Levoit
   product_name: Core 300S

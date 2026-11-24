@@ -87,15 +87,16 @@ This writes the bootloader, the partition table and the app, then opens the seri
 
 ## 5. Pair
 
-The log prints the setup code after boot:
+The firmware makes a random setup code on first boot and keeps it. The log shows it a few seconds in:
 
 ```
-[C][matter]:   SetupQRCode: MT:...
-[C][matter]:   QR URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=MT:...
-[C][matter]:   Manual pairing code: ....-...-....
+[S][text_sensor]: 'Matter QR Code' >> 'MT:...'
+[S][text_sensor]: 'Matter Pairing Code' >> '....-...-....'
 ```
 
-Open the URL to get a QR image. In Apple Home choose Add Accessory, scan it, and accept the uncertified accessory prompt. The phone sends Wi-Fi credentials over Bluetooth.
+Turn the `MT:` text into a QR image at `https://project-chip.github.io/connectedhomeip/qrcode.html?data=MT:...`, or type the 11-digit code instead. In Apple Home choose Add Accessory, scan it, and accept the uncertified accessory prompt. The phone sends Wi-Fi credentials over Bluetooth.
+
+Write the code down. It survives updates and the On/Off reset, not an erase. Once the purifier is on Wi-Fi, both values are also diagnostic entities in Home Assistant's ESPHome integration.
 
 If Bluetooth pairing fails, set Wi-Fi over the serial cable with Improv from [web.esphome.io](https://web.esphome.io) in Chrome, then add the accessory.
 

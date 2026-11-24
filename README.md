@@ -44,7 +44,7 @@ Until the fork's changes are merged, you build against the fork. After that, thi
 - The Wi-Fi LED does nothing, and nothing shows that a reset hold has registered.
 - Commands are not retried.
 - A bad update is not rolled back on a health check.
-- The setup code is random, made on first boot, and only printed in the log. Copy it from there.
+- The setup code is random and made on first boot. It shows in the serial log during the first flash, and later as a diagnostic entity over the ESPHome API. There is no label.
 - Test vendor ID. Apple shows an "uncertified accessory" prompt once.
 - The 15-second reset is wired up but has not been held to the end on hardware.
 
@@ -59,7 +59,7 @@ cp secrets.yaml.example secrets.yaml   # set a real OTA password
 .venv/bin/esphome run levoit-core300s.yaml --device /dev/cu.usbserial-XXXX
 ```
 
-The log prints a QR code link. Scan it in Apple Home.
+The log shows the Matter QR code text and an 11-digit code. Pair with either in Apple Home.
 
 That is the short version. **Read [`FLASHING.md`](FLASHING.md) before you open the purifier.** It covers wiring, backing up the stock firmware, pairing, updates and resets.
 
