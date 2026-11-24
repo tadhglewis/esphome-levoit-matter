@@ -4,6 +4,8 @@ Levoit air purifiers on Matter, using ESPHome. No cloud, no VeSync, no Home Assi
 
 **Status: compiles. Has never run on hardware. Best effort, no support.**
 
+**If you do not need ESPHome, use [levoit-matter](https://github.com/tadhglewis/levoit-matter).** It is the same purifier on Espressif's Matter SDK, esp-matter, directly. It runs on a real Core 300S, needs no fork, and covers more models. Use this repo only if you want the purifier inside an ESPHome setup.
+
 ## What is going on here
 
 ESPHome has no Matter support of its own. [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) adds it, but it is early and is missing what an air purifier needs:
@@ -21,8 +23,6 @@ So this project is two things:
 2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit).
 
 Until the fork's changes are merged, you build against the fork. After that, this config should work with upstream esphome-matter and the fork goes away.
-
-If you want a finished firmware and not an ESPHome config, use [levoit-matter](https://github.com/tadhglewis/levoit-matter). It is the same purifier on Espressif's Matter SDK directly, with no fork involved, and it covers more models.
 
 ## Features
 
