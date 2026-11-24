@@ -21,7 +21,7 @@ ESPHome has no Matter support of its own. [DavidvtWout/esphome-matter](https://g
 So this project is two things:
 
 1. **A fork of esphome-matter that adds those features**: the `ble-commissioning-fan-mapping` branch of [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter). Nothing in it is Levoit-specific, and the aim is to get all of it merged upstream. [`docs/UPSTREAM.md`](docs/UPSTREAM.md) lists each change and the plan.
-2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit), through the `feat/core-wifi-button-hold` branch of [tadhglewis/levoit](https://github.com/tadhglewis/levoit) until [#140](https://github.com/tuct/levoit/pull/140), [#141](https://github.com/tuct/levoit/pull/141) and the Wi-Fi button change are merged. Without them a Core 300S whose controller reports 1.0.0 shows no state at all.
+2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit), through the `feat/core-wifi-button-hold` branch of [tadhglewis/levoit](https://github.com/tadhglewis/levoit) until [#140](https://github.com/tuct/levoit/pull/140), [#141](https://github.com/tuct/levoit/pull/141), [#142](https://github.com/tuct/levoit/pull/142) and [#143](https://github.com/tuct/levoit/pull/143) are merged. Without them a Core 300S whose controller reports 1.0.0 shows no state at all.
 
 Until the fork's changes are merged, you build against the fork. After that, this config should work with upstream esphome-matter and the fork goes away.
 
@@ -31,7 +31,7 @@ Until the fork's changes are merged, you build against the fork. After that, thi
 |---|---|
 | Power, 3 speeds | Purifier tile, percentage slider |
 | Auto mode | Purifier mode, showing the speed the fan runs at |
-| Filter life, change-filter flag | Filter status |
+| Filter life, change-filter flag | Filter status. Six months at full speed, counted by airflow. Hold Sleep for 3 seconds to reset. |
 | PM2.5, air quality level | Air quality sensor |
 | Sleep, Display, Child Lock | Three separate switches. Display reads off in Sleep and refuses to turn on. |
 | Pairing | Scan the QR code. The phone sends Wi-Fi over Bluetooth. |

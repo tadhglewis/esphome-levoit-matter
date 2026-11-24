@@ -85,11 +85,24 @@ sensor:
     name: "AQI"
     id: aqi
     type: aqi
+    on_value:
+      - sensor.template.publish:
+          id: aqi_matter
+          state: !lambda 'return x == 2 ? 1 : x;'
+  - platform: template
+    id: aqi_matter
+    internal: true
   - platform: levoit
     levoit: purifier
     name: "Filter Life"
     id: filter_life
     type: filter_life_left
+
+number:
+  - platform: levoit
+    levoit: purifier
+    name: "Filter Lifetime"
+    type: filter_lifetime_months
 
 binary_sensor:
   - platform: levoit
@@ -222,7 +235,7 @@ matter:
     2:
       air_quality_sensor:
         pm_2_5: pm25
-        air_quality: aqi
+        air_quality: aqi_matter
     3:
       id: sleep_endpoint
       on_off_plug_in_unit:
