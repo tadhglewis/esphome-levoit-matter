@@ -6,8 +6,10 @@ Both use the same partition table and the same `fctry` factory data, so one QR l
 
 ## To this config
 
+levoit-matter has to be a build with `CONFIG_LEVOIT_HTTP_OTA=y`. Its normal update is Matter OTA Software Update, which only takes a Matter `.ota` image with a higher version from the same vendor and product, and this config builds none. Without it, switching needs serial.
+
 1. Remove the purifier from Home.
-2. Build, then send it with levoit-matter's update tool:
+2. Build, then send it with levoit-matter's HTTP update:
 
 ```bash
 .venv/bin/esphome compile levoit-core300s.yaml
