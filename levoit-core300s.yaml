@@ -6,11 +6,25 @@ substitutions:
 esphome:
   name: ${device_name}
   friendly_name: Levoit Core 300S
+  includes:
+    - dual_firmware.h
   on_boot:
-    priority: -100
-    then:
-      - delay: 15s
-      - lambda: id(accept_matter_writes) = true;
+    - priority: 1000
+      then:
+        - if:
+            condition:
+              lambda: return levoit_matter_data_present();
+            then:
+              - logger.log:
+                  level: WARN
+                  format: "levoit-matter settings found, erasing all settings"
+              - lambda: |-
+                  global_preferences->reset();
+                  App.safe_reboot();
+    - priority: -100
+      then:
+        - delay: 15s
+        - lambda: id(accept_matter_writes) = true;
 
 esp32:
   board: esp32dev
