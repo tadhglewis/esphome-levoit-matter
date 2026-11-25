@@ -23,6 +23,7 @@ esphome:
                   App.safe_reboot();
     - priority: -100
       then:
+        - lambda: erase_other_firmware();
         - delay: 15s
         - lambda: id(accept_matter_writes) = true;
 

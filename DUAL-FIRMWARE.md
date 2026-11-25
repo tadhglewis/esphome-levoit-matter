@@ -2,7 +2,11 @@
 
 This branch only. For one purifier that runs [levoit-matter](https://github.com/tadhglewis/levoit-matter) and sometimes this config, updated over Wi-Fi both ways.
 
-Both use the same partition table and the same `fctry` factory data, so one QR label pairs either. Each erases the other's settings on its first boot, so nothing carries over: not pairing, not Wi-Fi, not filter life. levoit-matter's side is the [`dual-firmware`](https://github.com/tadhglewis/levoit-matter/tree/dual-firmware) branch.
+Both use the same partition table and the same `fctry` factory data, so one QR label pairs either. Each removes every trace of the other:
+
+- On its first boot it erases the whole settings partition if the other's settings are there: pairing, Wi-Fi, filter life, everything.
+- Once its own image is confirmed, it erases the other app slot if that holds the other firmware.
+- Neither writes to `fctry`, so only the setup code carries over. levoit-matter's side is the [`dual-firmware`](https://github.com/tadhglewis/levoit-matter/tree/dual-firmware) branch.
 
 ## To this config
 
