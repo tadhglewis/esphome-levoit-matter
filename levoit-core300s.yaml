@@ -231,6 +231,16 @@ script:
       - logger.log: "On/Off held for 15 s, resetting Matter and Wi-Fi"
       - matter.factory_reset:
 
+text_sensor:
+  - platform: levoit
+    levoit: purifier
+    name: "ESP Version"
+    type: esp_version
+  - platform: levoit
+    levoit: purifier
+    name: "Model"
+    type: model
+
 matter:
   vendor_name: Levoit
   product_name: Core 300S
