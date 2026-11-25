@@ -67,6 +67,12 @@ Matter support for ESPHome. Upstream has merged nothing since 2026-11-18, so the
 
 All of it has now run on a Core 300S paired to Apple Home.
 
+### Gaps, not started
+
+| Gap | What it takes |
+|---|---|
+| Matter OTA Software Update | esphome-matter lists `ota_requestor` as an untested data-model device type, but leaves the SDK's `CONFIG_ENABLE_OTA_REQUESTOR` and `CONFIG_CHIP_OTA_IMAGE_BUILD` off, so nothing answers an OTA Provider and no `.ota` image is built. Turning them on gives a Matter-standard update path that Home Assistant and other controllers can drive, beside ESPHome's OTA. Two things to settle with upstream: who marks the new image valid (ESPHome's `safe_mode` does today, and the SDK never does), and refusing an update while the running image is unconfirmed. [levoit-matter](https://github.com/tadhglewis/levoit-matter/blob/main/docs/DESIGN.md#updates) does both. |
+
 ### Elsewhere in the fork
 
 | Branch | What | State |

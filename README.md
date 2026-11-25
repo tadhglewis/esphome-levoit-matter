@@ -44,6 +44,7 @@ Until the fork's changes are merged, you build against the fork. After that, thi
 - The Wi-Fi LED does nothing, and nothing shows that a reset hold has registered.
 - Commands are not retried.
 - A bad update is not rolled back on a health check.
+- No Matter OTA Software Update. esphome-matter does not build the SDK's OTA Requestor, so updates are ESPHome's own OTA. See [`docs/UPSTREAM.md`](docs/UPSTREAM.md#gaps-not-started).
 - Test vendor ID. Apple shows an "uncertified accessory" prompt once.
 - The 15-second reset is wired up but has not been held to the end on hardware.
 
