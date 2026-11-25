@@ -77,26 +77,29 @@ To restore the stock firmware later:
 
 ## 4. Flash
 
+First make this purifier's setup code, once:
+
+```bash
+.venv/bin/pip install esp-matter-mfg-tool==1.0.29
+.venv/bin/esp-matter-mfg-tool -v 0xFFF1 -p 0x8000 -s 0x6000 -dm 2 --outdir factory
+```
+
+It writes the factory data, a QR image and the codes under `factory/fff1_8000/<uuid>/`. The factory data holds a verifier for the code, not the code. Back up the `factory` folder: it is the only copy of the code.
+
 With the chip in its bootloader:
 
 ```bash
+.venv/bin/esptool --port $PORT --after no-reset write-flash 0x1A000 factory/fff1_8000/*/*-partition.bin
 .venv/bin/esphome run levoit-core300s.yaml --device $PORT
 ```
 
-This writes the bootloader, the partition table and the app, then opens the serial log. The partition table in `partitions-4mb-matter.csv` differs from ESPHome's default, so the first flash must be serial.
+The first command writes the factory data to the `fctry` partition. The second writes the bootloader, the partition table and the app, then opens the serial log. The partition table in `partitions-4mb-matter.csv` differs from ESPHome's default, so the first flash must be serial.
 
 ## 5. Pair
 
-The firmware makes a random setup code on first boot and keeps it. The log shows it a few seconds in:
+Scan `factory/fff1_8000/<uuid>/<uuid>-qrcode.png`, or type the manual code from `<uuid>-onb_codes.csv`. In Apple Home choose Add Accessory, scan it, and accept the uncertified accessory prompt. The phone sends Wi-Fi credentials over Bluetooth.
 
-```
-[S][text_sensor]: 'Matter QR Code' >> 'MT:...'
-[S][text_sensor]: 'Matter Pairing Code' >> '....-...-....'
-```
-
-Turn the `MT:` text into a QR image at `https://project-chip.github.io/connectedhomeip/qrcode.html?data=MT:...`, or type the 11-digit code instead. In Apple Home choose Add Accessory, scan it, and accept the uncertified accessory prompt. The phone sends Wi-Fi credentials over Bluetooth.
-
-Write the code down. It survives updates and the On/Off reset, not an erase. Once the purifier is on Wi-Fi, both values are also diagnostic entities in Home Assistant's ESPHome integration.
+The purifier stores only a verifier for the code, so the log and Home Assistant cannot show it. The code survives updates and the On/Off reset. A full erase removes it; write the factory data again to get it back.
 
 If Bluetooth pairing fails, set Wi-Fi over the serial cable with Improv from [web.esphome.io](https://web.esphome.io) in Chrome, then add the accessory.
 
@@ -110,10 +113,10 @@ Use the IP address if `.local` does not resolve.
 
 ## 7. Factory reset
 
-Hold On/Off for 15 seconds, the [manual's](https://files.vesync.com/desc/LEVOIT_Core300S_USER_MANUAL.pdf) own reset (page 7). This clears Matter pairing and the saved Wi-Fi network, then reboots into pairing mode. The setup code stays the same. If that fails, erase over serial and flash again:
+Hold On/Off for 15 seconds, the [manual's](https://files.vesync.com/desc/LEVOIT_Core300S_USER_MANUAL.pdf) own reset (page 7). This clears Matter pairing and the saved Wi-Fi network, then reboots into pairing mode. The setup code stays the same. If that fails, erase the settings over serial, which keeps the factory data:
 
 ```bash
-.venv/bin/esptool --port $PORT erase-flash
+.venv/bin/esptool --port $PORT erase-region 0xc000 0xE000
 ```
 
 ## 8. What to watch on the first boot

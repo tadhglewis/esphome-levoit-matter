@@ -9,7 +9,7 @@ Last checked 2026-11-25.
 | Fork | Upstream | Landed | In flight | Not sent |
 |---|---|---|---|---|
 | [tadhglewis/levoit](https://github.com/tadhglewis/levoit) | [tuct/levoit](https://github.com/tuct/levoit) | 2 | 3 | 0 |
-| [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter) | [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) | 0 | 1 | 7 |
+| [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter) | [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) | 0 | 1 | 8 |
 
 The driver fork can go once [#142](https://github.com/tuct/levoit/pull/142) and [#143](https://github.com/tuct/levoit/pull/143) merge. The esphome-matter fork is the long one: nothing on the config's branch has been sent.
 
@@ -61,6 +61,7 @@ Matter support for ESPHome. Upstream has merged nothing since 2026-11-18, so the
 | `matter.set_attribute` for code-driven clusters | Needs a test config | Second |
 | Sensor rows for AirQuality and HEPA filter monitoring | Needs docs and a test config | Third |
 | `fan_id`: map an ESPHome fan to FanControl | Needs docs and a test config | Fourth |
+| `factory_partition`: read the setup code from a separate NVS partition made by `esp-matter-mfg-tool`, so the passcode is never on the device | Not run on hardware | Its own PR, after the fixes above |
 | Bluetooth commissioning alongside `wifi` | Two linker wraps on the SDK; needs a design discussion in upstream issue [#97](https://github.com/DavidvtWout/esphome-matter/issues/97) | Last |
 | Fixes from the first hardware run: HEPA DegradationDirection created before the condition feature, `ESP_ERR_NOT_FINISHED` treated as success, On and Toggle on On/Off, ug/m3 for PM | Found 2026-11-25 | Split into the PRs above they belong to. The first two are bugs anyone hits with a filter or a fan. |
 
