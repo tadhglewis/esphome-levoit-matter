@@ -3,4 +3,5 @@
 esphome-matter/
 secrets.yaml
 build.log
-factory/
+devices/
+.venv-mfg/
