@@ -80,16 +80,15 @@ To restore the stock firmware later:
 First make this purifier's setup code, once:
 
 ```bash
-.venv/bin/pip install esp-matter-mfg-tool==1.0.29
-.venv/bin/esp-matter-mfg-tool -v 0xFFF1 -p 0x8000 -s 0x6000 -dm 2 --outdir factory
+./tools/factory.sh
 ```
 
-It writes the factory data, a QR image and the codes under `factory/fff1_8000/<uuid>/`. The factory data holds a verifier for the code, not the code. Back up the `factory` folder: it is the only copy of the code.
+It runs Espressif's `esp-matter-mfg-tool` and writes `devices/purifier/fctry.bin`, the factory data, and `devices/purifier/secrets/` with the QR image and codes. The factory data holds a verifier for the code, not the code. Back up `devices/purifier`: it is the only copy of the code. Run it again and it shows the existing code; `--new` replaces it.
 
 With the chip in its bootloader:
 
 ```bash
-.venv/bin/esptool --port $PORT --after no-reset write-flash 0x1A000 factory/fff1_8000/*/*-partition.bin
+.venv/bin/esptool --port $PORT --after no-reset write-flash 0x1A000 devices/purifier/fctry.bin
 .venv/bin/esphome run levoit-core300s.yaml --device $PORT
 ```
 
@@ -97,7 +96,7 @@ The first command writes the factory data to the `fctry` partition. The second w
 
 ## 5. Pair
 
-Scan `factory/fff1_8000/<uuid>/<uuid>-qrcode.png`, or type the manual code from `<uuid>-onb_codes.csv`. In Apple Home choose Add Accessory, scan it, and accept the uncertified accessory prompt. The phone sends Wi-Fi credentials over Bluetooth.
+Scan `devices/purifier/secrets/qrcode.png`, or type the manual code `factory.sh` printed. In Apple Home choose Add Accessory, scan it, and accept the uncertified accessory prompt. The phone sends Wi-Fi credentials over Bluetooth.
 
 The purifier stores only a verifier for the code, so the log and Home Assistant cannot show it. The code survives updates and the On/Off reset. A full erase removes it; write the factory data again to get it back.
 

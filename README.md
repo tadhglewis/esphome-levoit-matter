@@ -21,7 +21,7 @@ ESPHome has no Matter support of its own. [DavidvtWout/esphome-matter](https://g
 So this project is two things:
 
 1. **A fork of esphome-matter that adds those features**: the `ble-commissioning-fan-mapping` branch of [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter). Nothing in it is Levoit-specific, and the aim is to get all of it merged upstream. [`docs/UPSTREAM.md`](docs/UPSTREAM.md) lists each change and the plan.
-2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file and a partition table. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit), through the `feat/core-wifi-button-hold` branch of [tadhglewis/levoit](https://github.com/tadhglewis/levoit) until [#142](https://github.com/tuct/levoit/pull/142) (panel filter reset) and [#143](https://github.com/tuct/levoit/pull/143) (On/Off hold) are merged. The 19-byte status and status request it also needs are already in tuct/levoit ([#140](https://github.com/tuct/levoit/pull/140), [#141](https://github.com/tuct/levoit/pull/141)). [docs/UPSTREAM.md](docs/UPSTREAM.md) tracks it.
+2. **This repo: an example config that uses the fork** for a Levoit Core 300S. It is one YAML file, a partition table and a script that makes the setup code. The purifier itself is driven by [tuct/levoit](https://github.com/tuct/levoit), through the `feat/core-wifi-button-hold` branch of [tadhglewis/levoit](https://github.com/tadhglewis/levoit) until [#142](https://github.com/tuct/levoit/pull/142) (panel filter reset) and [#143](https://github.com/tuct/levoit/pull/143) (On/Off hold) are merged. The 19-byte status and status request it also needs are already in tuct/levoit ([#140](https://github.com/tuct/levoit/pull/140), [#141](https://github.com/tuct/levoit/pull/141)). [docs/UPSTREAM.md](docs/UPSTREAM.md) tracks it.
 
 Until the fork's changes are merged, you build against the fork. After that, this config should work with upstream esphome-matter and the fork goes away.
 
@@ -71,13 +71,12 @@ You need the case open and a 3.3 V USB serial adapter.
 python3 -m venv .venv && .venv/bin/pip install esphome==2026.11.0
 git clone -b ble-commissioning-fan-mapping https://github.com/tadhglewis/esphome-matter.git esphome-matter
 cp secrets.yaml.example secrets.yaml   # set a real OTA password
-.venv/bin/pip install esp-matter-mfg-tool==1.0.29
-.venv/bin/esp-matter-mfg-tool -v 0xFFF1 -p 0x8000 -s 0x6000 -dm 2 --outdir factory   # once: setup code and QR
-.venv/bin/esptool --port /dev/cu.usbserial-XXXX --after no-reset write-flash 0x1A000 factory/fff1_8000/*/*-partition.bin
+./tools/factory.sh                     # once: this purifier's setup code and QR label
+.venv/bin/esptool --port /dev/cu.usbserial-XXXX --after no-reset write-flash 0x1A000 devices/purifier/fctry.bin
 .venv/bin/esphome run levoit-core300s.yaml --device /dev/cu.usbserial-XXXX
 ```
 
-Scan the QR image in `factory/fff1_8000/<uuid>/` in Apple Home.
+Scan `devices/purifier/secrets/qrcode.png` in Apple Home.
 
 That is the short version. **Read [`FLASHING.md`](FLASHING.md) before you open the purifier.** It covers wiring, backing up the stock firmware, pairing, updates and resets.
 
