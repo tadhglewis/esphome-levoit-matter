@@ -9,7 +9,7 @@ Last checked 2026-11-27.
 | Fork | Upstream | Landed | In flight | Not sent |
 |---|---|---|---|---|
 | [tadhglewis/levoit](https://github.com/tadhglewis/levoit) | [tuct/levoit](https://github.com/tuct/levoit) | 6 | 2 | 0 |
-| [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter) | [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) | 0 | 3 | 5 |
+| [tadhglewis/esphome-matter](https://github.com/tadhglewis/esphome-matter) | [DavidvtWout/esphome-matter](https://github.com/DavidvtWout/esphome-matter) | 0 | 4 | 4 |
 
 The driver fork is effectively done: everything the config needs has merged ([#142](https://github.com/tuct/levoit/pull/142), [#143](https://github.com/tuct/levoit/pull/143), [#144](https://github.com/tuct/levoit/pull/144), [#148](https://github.com/tuct/levoit/pull/148)), so the config can build from `tuct/levoit` `main`; [#149](https://github.com/tuct/levoit/pull/149) and [#151](https://github.com/tuct/levoit/pull/151) are open refinements. The esphome-matter fork is the long one: the first changes are out as [#116](https://github.com/DavidvtWout/esphome-matter/pull/116) and draft [#117](https://github.com/DavidvtWout/esphome-matter/pull/117); the rest of the config's branch is not yet sent.
 
@@ -70,7 +70,7 @@ Matter support for ESPHome. Upstream has merged nothing since 2026-11-18, so the
 | Features on clusters without feature flags | A separate compile error (the config has no `feature_flags` member), and another contributor's open PR [#94](https://github.com/DavidvtWout/esphome-matter/pull/94) covers it | Support [#94](https://github.com/DavidvtWout/esphome-matter/pull/94); drop ours when it merges |
 | `matter.set_attribute` for code-driven clusters, with the AirQuality rating and HEPA filter monitoring mappings | Draft [#117](https://github.com/DavidvtWout/esphome-matter/pull/117), 2026-11-27, with an `air_quality_sensor` CI config and docs. Draft until CI is green (not built locally). | Mark ready when CI passes; drop when it merges |
 | `fan_id`: map an ESPHome fan to FanControl | Needs docs and a test config; depends on [#117](https://github.com/DavidvtWout/esphome-matter/pull/117) (code-driven `fan_control`) | After [#117](https://github.com/DavidvtWout/esphome-matter/pull/117) |
-| `factory_partition`: read the setup code from a separate NVS partition made by `esp-matter-mfg-tool`, so the passcode is never on the device | Not run on hardware | Its own PR, after the fixes above |
+| `factory_partition`: read the setup code from a separate NVS partition made by `esp-matter-mfg-tool`, so only the SPAKE2+ verifier (not the passcode) is on the device | Draft [#118](https://github.com/DavidvtWout/esphome-matter/pull/118), 2026-11-27, standalone. Run on hardware: the config's `factory_partition: fctry` reads the `fctry` partition and pairs. | Mark ready when CI passes; drop when it merges |
 | Bluetooth commissioning alongside `wifi` | Two linker wraps on the SDK; needs a design discussion in upstream issue [#97](https://github.com/DavidvtWout/esphome-matter/issues/97) | Last |
 | Fixes from the first hardware run: On and Toggle on On/Off, ug/m3 for PM | Found 2026-11-25. The HEPA DegradationDirection and `ESP_ERR_NOT_FINISHED` fixes are in [#117](https://github.com/DavidvtWout/esphome-matter/pull/117). | On/Off goes with the fan PR; ug/m3 needs the feature-flags split |
 
