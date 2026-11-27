@@ -6,7 +6,7 @@ Both use the same partition table and the same `fctry` factory data, so one QR l
 
 - On its first boot it erases the whole settings partition if the other's settings are there: pairing, Wi-Fi, filter life, everything.
 - Once its own image is confirmed, it erases the other app slot if that holds the other firmware.
-- Neither writes to `fctry`, so only the setup code carries over. levoit-matter's side is the [`dual-firmware`](https://github.com/tadhglewis/levoit-matter/tree/dual-firmware) branch.
+- Neither writes to `fctry`, so only the setup code carries over. levoit-matter's side is the [`feat/dual-firmware`](https://github.com/tadhglewis/levoit-matter/tree/feat/dual-firmware) branch.
 
 ## To this config
 
@@ -25,7 +25,7 @@ levoit-matter has to be a build with `CONFIG_LEVOIT_HTTP_OTA=y`. Its normal upda
 ## Back to levoit-matter
 
 1. Remove the purifier from Home.
-2. Build levoit-matter's `dual-firmware` branch, then send it with ESPHome's OTA:
+2. Build levoit-matter's `feat/dual-firmware` branch, then send it with ESPHome's OTA:
 
 ```bash
 .venv/bin/esphome upload levoit-core300s.yaml --device <ip> --file ../levoit-matter/build/levoit_matter.bin
